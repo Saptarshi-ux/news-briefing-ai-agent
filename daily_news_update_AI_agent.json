@@ -1,0 +1,302 @@
+{
+  "name": "daily_news_update_AI_agent",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "triggerAtHour": 7
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        -1712,
+        160
+      ],
+      "id": "26a307b3-e7fe-4ea8-9141-4138b87b8a89",
+      "name": "Schedule Trigger"
+    },
+    {
+      "parameters": {
+        "url": "https://www.hindustantimes.com/feeds/rss/sports/rssfeed.xml",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.rssFeedRead",
+      "typeVersion": 1.2,
+      "position": [
+        -960,
+        -48
+      ],
+      "id": "67dddb92-758b-4862-ae7c-9201bdb73c5f",
+      "name": "Sports"
+    },
+    {
+      "parameters": {
+        "url": "https://economictimes.indiatimes.com/markets/rssfeeds/1977021501.cms",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.rssFeedRead",
+      "typeVersion": 1.2,
+      "position": [
+        -960,
+        112
+      ],
+      "id": "2db632d2-8601-4313-b01f-9283e761bcee",
+      "name": "markets"
+    },
+    {
+      "parameters": {
+        "url": "https://www.theverge.com/rss/index.xml",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.rssFeedRead",
+      "typeVersion": 1.2,
+      "position": [
+        -960,
+        272
+      ],
+      "id": "635a8ce5-0500-4bac-a419-b57a3d162fd1",
+      "name": "Tech/AI"
+    },
+    {
+      "parameters": {
+        "url": "https://government.economictimes.indiatimes.com/rss/policy",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.rssFeedRead",
+      "typeVersion": 1.2,
+      "position": [
+        -960,
+        432
+      ],
+      "id": "1b4bc28e-09de-4d67-a9a8-8d1f6f71e257",
+      "name": "Govt Policies"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        -560,
+        128
+      ],
+      "id": "e0e0cf13-65bb-4172-b58d-3d90131b5cb4",
+      "name": "Merge"
+    },
+    {
+      "parameters": {
+        "fieldsToAggregate": {
+          "fieldToAggregate": [
+            {
+              "fieldToAggregate": "=title",
+              "renameField": true,
+              "outputFieldName": "news_list"
+            }
+          ]
+        },
+        "options": {
+          "mergeLists": true
+        }
+      },
+      "type": "n8n-nodes-base.aggregate",
+      "typeVersion": 1,
+      "position": [
+        -336,
+        128
+      ],
+      "id": "633c9e8e-d847-407d-bcda-0865bb95dd66",
+      "name": "Aggregate"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=As an experienced journalist, please summarize these {{ $json.news_list }} news in proper format. Make it in 10-15 bullet points with little detail explanations",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        -16,
+        -208
+      ],
+      "id": "28ff880c-682a-42c0-92ae-190806c71769",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "sendTo": "saptarshi.ban54@gmail.com",
+        "subject": "News Update",
+        "emailType": "text",
+        "message": "=Hello,Good Morning. Today's top news bulletins are as follows: \n\n{{ $json.output }}\n\n__\nThis is all for today\nThank you for your time\nHave a great day",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        416,
+        112
+      ],
+      "id": "4f0410a6-614b-43da-b503-26f1edf184e1",
+      "name": "Send a message",
+      "webhookId": "64824bd7-220d-4be6-802c-27dac60879df",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "vysZXkZ72Jp2N5xM",
+          "name": "Gmail account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        -16,
+        432
+      ],
+      "id": "49bcac37-8570-449a-8d66-bbbb66e3fd70",
+      "name": "Brain of AI Agent",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "9gD5nFKfI3Ax0f3u",
+          "name": "New_API_n8n"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "Sports",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "markets",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Tech/AI",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Govt Policies",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Govt Policies": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Tech/AI": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "markets": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Sports": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge": {
+      "main": [
+        [
+          {
+            "node": "Aggregate",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Aggregate": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Send a message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Brain of AI Agent": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "availableInMCP": false
+  },
+  "versionId": "a09dc646-dd5e-4601-a7ed-6aa2a841f9a9",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "a44949c9ec594ba3977fa247b4e3d04d5512a25d61f54016d8355d17ebf2eaa1"
+  },
+  "id": "QfTxQfVHGeq0VhhKRKzQG",
+  "tags": []
+}
