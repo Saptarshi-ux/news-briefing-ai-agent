@@ -29,6 +29,10 @@ This project demonstrates **real-world AI orchestration, data aggregation, and a
 
 ## Workflow Breakdown
 
+<img width="1669" height="674" alt="news_update_ai_agent_2" src="https://github.com/user-attachments/assets/5fc8a3e1-f8f5-407f-8c35-dcb3d5a79b47" />
+
+
+
 ### Precision Scheduling (Trigger Layer)
 - **Node:** Schedule Trigger  
 - **Configuration:** Daily at **7:00 AM**
