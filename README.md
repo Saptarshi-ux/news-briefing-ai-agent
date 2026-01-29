@@ -1,6 +1,7 @@
 # The Daily News Briefing AI Agent  
 **Automated Multi-Domain News Intelligence using n8n + Google Gemini**
-
+##### The full description of this model is on my YouTube channel, the video reference is: 
+###### https://www.youtube.com/watch?v=LUNaH5AH1pc
 ---
 
 ## Project Overview
